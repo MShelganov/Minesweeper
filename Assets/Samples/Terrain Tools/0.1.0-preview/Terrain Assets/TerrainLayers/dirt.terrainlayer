@@ -8,14 +8,14 @@ TerrainLayer:
   m_PrefabAsset: {fileID: 0}
   m_Name: dirt
   m_DiffuseTexture: {fileID: 2800000, guid: c2e975e8a074dff45aee75e580a54344, type: 3}
-  m_NormalMapTexture: {fileID: 2800000, guid: 1ff4687a05ada474ca7eaf3010a871f6, type: 3}
-  m_MaskMapTexture: {fileID: 2800000, guid: 3c6d7b80bcc59ae448166eacd4ad79b0, type: 3}
-  m_TileSize: {x: 100, y: 100}
+  m_NormalMapTexture: {fileID: 2800000, guid: cb51906d821f0f3429d223e036af1c5f, type: 3}
+  m_MaskMapTexture: {fileID: 2800000, guid: f9980e71f7724ad4c9aba35465d1c496, type: 3}
+  m_TileSize: {x: 40, y: 40}
   m_TileOffset: {x: 0, y: 0}
-  m_Specular: {r: 0, g: 0, b: 0, a: 0}
-  m_Metallic: 0
-  m_Smoothness: 0
-  m_NormalScale: 1.27
+  m_Specular: {r: 1, g: 0, b: 0, a: 1}
+  m_Metallic: 0.2
+  m_Smoothness: 0.44
+  m_NormalScale: 1.7
   m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
   m_DiffuseRemapMax: {x: 1, y: 1, z: 1, w: 1}
   m_MaskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
