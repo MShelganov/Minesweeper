@@ -9,7 +9,7 @@ TerrainLayer:
   m_Name: stone_dirt
   m_DiffuseTexture: {fileID: 2800000, guid: 1fb9ff25fab700d47955548453e85558, type: 3}
   m_NormalMapTexture: {fileID: 2800000, guid: 3414d2d74c8d1b745ba7fea4a28c6aa5, type: 3}
-  m_MaskMapTexture: {fileID: 2800000, guid: 91bc803db96519f419de02b38fafec6a, type: 3}
+  m_MaskMapTexture: {fileID: 0}
   m_TileSize: {x: 20, y: 20}
   m_TileOffset: {x: 0, y: 0}
   m_Specular: {r: 0, g: 0, b: 0, a: 0}

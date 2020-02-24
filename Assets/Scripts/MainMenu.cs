@@ -19,7 +19,8 @@ public class MainMenu : MonoBehaviour
 
     public void PlayGame()
     {
-        SceneManager.LoadScene("Dungeon");
+        //SceneManager.LoadScene("Dungeon");
+        SceneManager.LoadScene("Hub");
     }
 
     public void QiutGame()
