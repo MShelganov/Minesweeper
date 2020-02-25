@@ -18,7 +18,6 @@ namespace pazzle.game
         private bool _flag = false;
         private bool _open = false;
 
-        #region Getters amd Setters
         public bool Mine
         {
             get { return _mine; }
@@ -80,7 +79,5 @@ namespace pazzle.game
                 }
             }
         }
-        #endregion Getters amd Setters
-
     }
 }
