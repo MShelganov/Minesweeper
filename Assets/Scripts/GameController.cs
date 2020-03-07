@@ -1,141 +1,128 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace pazzle.game
+namespace pazzle.game.contrellers
 {
-    public enum LevelCount
-    {
-        TEST, ONE, TWO
-    }
+    [ExecuteInEditMode]
     public class GameController : MonoBehaviour
     {
-        public LevelCount Level = LevelCount.TEST;
-        public Camera ThisCamera;
-        public Board BoardGame;
-        public Selecter TileSelecter;
+        public LevelCount Level;
+        public Camera MainCamera;
         // Camera
         public float cameraSpeed = 20f;
         public float smoothSpeed = 0.125f;
         public float panBorderThickness = 20f;
-        private Vector3 target;
+        // Settings
+        public bool interpolate = true;
+        public float panAngle = 0f;
+        [Range(100, 180)]
+        public float tiltAngle = 160f;
+        [Range(20, 500)]
+        public float distance = 100f;
+        [Range(1, 12)]
+        public uint steps = 8;
+        [Range(1, 12)]
+        public float yFactor = 1;
+        public bool wrapPanAngle = false;
+        public Vector3 pos = new Vector3(0, 36, -93);
+        public Vector3 target;
 
-        private RaycastHit raycastHit;
-        // Level
-        private int mines, rowGrid, colGrid, rowHole, colHole, widthHole, heightHole;
+        protected Ray ray;
+        protected RaycastHit raycastHit;
 
-        void Start()
+        private Rect maxArea;
+        private Vector3 nextStepTarget;
+        private float currentPanAngle = 0;
+        private float currentTiltAngle = 90;
+
+        public virtual void Start()
         {
-            if (BoardGame == null || ThisCamera == null)
+            if (MainCamera is null)
             {
-                Debug.LogException(new Exception("Board is null!"));
+                Debug.LogException(new Exception("The MainCamera is null!"));
                 return;
             }
-            target = new Vector3(0, 40, -25);
-            switch (Level)
-            {
-                case LevelCount.TEST:
-                    mines = 10;
-                    rowGrid = 10;
-                    colGrid = 10;
-                    rowHole = 5;
-                    colHole = 5;
-                    widthHole = 2;
-                    heightHole = 2;
-                    break;
-                case LevelCount.ONE:
-                    // TODO
-                    break;
-                case LevelCount.TWO:
-                    // TODO
-                    break;
-            }
-            BoardGame.SetSetup(mines, rowGrid, colGrid);
-            BoardGame.SetDimensions();
-            BoardGame.SetEmptySpace(rowHole, colHole, widthHole, heightHole);
-            BoardGame.SetNumberOfMines();
+			
+            nextStepTarget = new Vector3();
+            // ToDo:
+            maxArea = new Rect(200f, 200f, 200f, 200f);
         }
 
-        void Update()
+        public virtual void Update()
         {
-            Ray ray = ThisCamera.ScreenPointToRay(Input.mousePosition);
+            ray = MainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Input.GetKey(KeyCode.W) || Input.mousePosition.y >= Screen.height - panBorderThickness)
+                nextStepTarget.z += cameraSpeed * Time.deltaTime;
+            else if (Input.GetKey(KeyCode.S) || Input.mousePosition.y <= panBorderThickness)
+                nextStepTarget.z -= cameraSpeed * Time.deltaTime;
 
-            if (Physics.Raycast(ray, out raycastHit, 100.0f))
+            if (Input.GetKey(KeyCode.A) || Input.mousePosition.x <= panBorderThickness)
+                nextStepTarget.x -= cameraSpeed * Time.deltaTime;
+            else if (Input.GetKey(KeyCode.D) || Input.mousePosition.x >= Screen.width - panBorderThickness)
+                nextStepTarget.x += cameraSpeed * Time.deltaTime;
+
+
+            if (!tiltAngle.Equals(currentTiltAngle) || !panAngle.Equals(currentPanAngle) || !target.Equals(pos))
             {
-                if (raycastHit.collider.tag == "Tile")
+
+                if (wrapPanAngle)
                 {
-                    Tile tile = raycastHit.transform.gameObject.GetComponentInParent<Tile>();
-                    int row = tile.Row;
-                    int col = tile.Col;
-
-                    if (TileSelecter.transform.position != tile.transform.position)
+                    if (panAngle < 0)
                     {
-                        TileSelecter.transform.position = tile.transform.position;
-                        TileSelecter.gameObject.SetActive(true);
+                        currentPanAngle += panAngle % 360 + 360 - panAngle;
+                        panAngle = panAngle % 360 + 360;
+                    }
+                    else
+                    {
+                        currentPanAngle += panAngle % 360 - panAngle;
+                        panAngle = panAngle % 360;
                     }
 
-                    if (BoardGame != null)
-                    {
-                        tile.Select = true;
-                        if (Input.GetMouseButtonDown(0))
-                        {
-                            if (BoardGame.IsBomb(row, col))
-                            {
+                    while (panAngle - currentPanAngle < -180)
+                        currentPanAngle -= 360;
 
-                            }
-                            else
-                            {
-                                // opens the plate and checks for surrounding bombs
-                                int count = BoardGame.Open(row, col);
-                            }
-                        }
-                        if (Input.GetMouseButtonDown(1))
-                            BoardGame.FlagMine(tile.Row, tile.Col);
-                    }
+                    while (panAngle - currentPanAngle > 180)
+                        currentPanAngle += 360;
+                }
+
+                if (interpolate)
+                {
+                    currentTiltAngle += (tiltAngle - currentTiltAngle) / (steps + 1);
+                    currentPanAngle += (panAngle - currentPanAngle) / (steps + 1);
                 }
                 else
                 {
-                    if (TileSelecter.gameObject.activeSelf)
-                    {
-                        TileSelecter.gameObject.SetActive(false);
-                        TileSelecter.ResetOffest();
-                    }
+                    currentPanAngle = panAngle;
+                    currentTiltAngle = tiltAngle;
                 }
 
-
-
-
-                if (Input.GetKey(KeyCode.W) || Input.mousePosition.y >= Screen.height - panBorderThickness)
-                    target.z += cameraSpeed * Time.deltaTime;
-                else if (Input.GetKey(KeyCode.S) || Input.mousePosition.y <= panBorderThickness)
-                    target.z -= cameraSpeed * Time.deltaTime;
-
-                if (Input.GetKey(KeyCode.A) || Input.mousePosition.x <= panBorderThickness)
-                    target.x -= cameraSpeed * Time.deltaTime;
-                else if (Input.GetKey(KeyCode.D) || Input.mousePosition.x >= Screen.width - panBorderThickness)
-                    target.x += cameraSpeed * Time.deltaTime;
-            }
-            else
-            {
-                if (TileSelecter.gameObject.activeSelf)
+                //snap coords if angle differences are close
+                if ((Mathf.Abs(tiltAngle - currentTiltAngle) < 0.01) && (Mathf.Abs(panAngle - currentPanAngle) < 0.01))
                 {
-                    TileSelecter.gameObject.SetActive(false);
-                    TileSelecter.ResetOffest();
+                    currentTiltAngle = tiltAngle;
+                    currentPanAngle = panAngle;
                 }
+
+                if (MainCamera is null) return;
+                pos.x = target.x + distance * Mathf.Sin(currentPanAngle * Mathf.Deg2Rad) * Mathf.Cos(currentTiltAngle * Mathf.Deg2Rad);
+                pos.z = target.z + distance * Mathf.Cos(currentPanAngle * Mathf.Deg2Rad) * Mathf.Cos(currentTiltAngle * Mathf.Deg2Rad);
+                pos.y = target.y + distance * Mathf.Sin(currentTiltAngle * Mathf.Deg2Rad) * yFactor;
+                MainCamera.transform.position = pos;
+                MainCamera.transform.LookAt(target);
             }
         }
 
         void OnGUI()
         {
-            Vector3 pos = target;
-            pos.y += Input.mouseScrollDelta.y * 1f;
-            target = pos;
+            distance += Input.mouseScrollDelta.y * 1f;
         }
+
         void FixedUpdate()
         {
-            Vector3 smoothedPosition = Vector3.Lerp(ThisCamera.transform.position, target, smoothSpeed);
-            ThisCamera.transform.position = smoothedPosition;
+            Vector3 smoothedPosition = Vector3.Lerp(target, nextStepTarget, smoothSpeed);
+            target = smoothedPosition;
         }
     }
 }
