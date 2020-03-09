@@ -18,8 +18,8 @@ namespace pazzle.game.contrellers
         public override void Start()
         {
             base.Start();
-            target = new Vector3(0f, 0f, 0f);
-
+            target = new Vector3(0.0f, 50.0f, 0.0f);
+            nextStepTarget = new Vector3(target.x, target.y, target.z);
             if (BoardGame is null)
             {
                 Debug.LogException(new Exception("The Board is null!"));
@@ -54,7 +54,7 @@ namespace pazzle.game.contrellers
         {
             base.Update();
 
-            if (Physics.Raycast(ray, out raycastHit, 100.0f))
+            if (Physics.Raycast(ray, out raycastHit, distance))
             {
                 if (raycastHit.collider.tag == Tags.Tile)
                 {
