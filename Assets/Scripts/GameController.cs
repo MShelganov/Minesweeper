@@ -12,7 +12,7 @@ namespace pazzle.game.contrellers
         public Camera MainCamera;
         // Camera
         public float cameraSpeed = 20.0f;
-        public float cameraHeight = 50.0f;
+        public float cameraHeight = 10.0f;
         public float smoothSpeed = 0.125f;
         public float panBorderThickness = 20f;
         // Settings

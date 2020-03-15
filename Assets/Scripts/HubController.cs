@@ -7,10 +7,16 @@ namespace pazzle.game.contrellers
 {
     public class HubController : GameController
     {
+        private Ray rayForTerrain;
+        private RaycastHit hitForTerrain;
+        private float rayLength;
+        private int layerMask;
 
         public override void Start()
         {
             base.Start();
+            rayLength = 300.0f;
+            layerMask = LayerMask.NameToLayer("Terrain");
             target = new Vector3(595.0f, 50.0f, 510.0f);
             nextStepTarget = new Vector3(target.x, target.y, target.z);
             maxArea = new Rect(200.0f, 200.0f, 800f, 775f);
@@ -32,6 +38,7 @@ namespace pazzle.game.contrellers
                     }
                 }
             }
+            nextStepTarget.y = Terrain.activeTerrain.SampleHeight(nextStepTarget);
         }
     }
 }
