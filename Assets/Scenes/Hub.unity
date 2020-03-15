@@ -540,6 +540,10 @@ MonoBehaviour:
   wrapPanAngle: 0
   pos: {x: 506.69778, y: 84.20202, z: 477.86063}
   target: {x: 595, y: 50, z: 510}
+  maxPanAngle: 70
+  minPanAngle: 70
+  maxTiltAngle: 160
+  minTiltAngle: 110
 --- !u!4 &1188778752
 Transform:
   m_ObjectHideFlags: 0
