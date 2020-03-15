@@ -11,31 +11,40 @@ namespace pazzle.game.contrellers
         public LevelCount Level;
         public Camera MainCamera;
         // Camera
-        public float cameraSpeed = 20f;
+        public float cameraSpeed = 20.0f;
+        public float cameraHeight = 10.0f;
         public float smoothSpeed = 0.125f;
         public float panBorderThickness = 20f;
         // Settings
         public bool interpolate = true;
-        public float panAngle = 0f;
+        [Range(0, 360)]
+        public float panAngle = 70.0f;
         [Range(100, 180)]
-        public float tiltAngle = 160f;
+        public float tiltAngle = 160.0f;
         [Range(20, 500)]
-        public float distance = 100f;
+        public float distance = 100.0f;
         [Range(1, 12)]
         public uint steps = 8;
         [Range(1, 12)]
         public float yFactor = 1;
         public bool wrapPanAngle = false;
-        public Vector3 pos = new Vector3(0, 36, -93);
+        public Vector3 pos = new Vector3(0.0f, 36.0f, -93.0f);
         public Vector3 target;
 
         protected Ray ray;
         protected RaycastHit raycastHit;
+        protected Vector3 nextStepTarget;
+        protected Rect maxArea;
 
-        private Rect maxArea;
-        private Vector3 nextStepTarget;
         private float currentPanAngle = 0;
         private float currentTiltAngle = 90;
+        private float lastPanAngle;
+        private float lastTiltAngle;
+        private float lastMouseX;
+        private float lastMouseY;
+        private const float hoverConst = 0.3f;
+        private bool move = false;
+
 
         public virtual void Start()
         {
@@ -44,26 +53,76 @@ namespace pazzle.game.contrellers
                 Debug.LogException(new Exception("The MainCamera is null!"));
                 return;
             }
-			
+            target = new Vector3();
             nextStepTarget = new Vector3();
-            // ToDo:
-            maxArea = new Rect(200f, 200f, 200f, 200f);
+            currentPanAngle = panAngle;
+            currentTiltAngle = tiltAngle;
+            maxArea = new Rect(-500.0f, -500.0f, 1000f, 1000f);
         }
 
         public virtual void Update()
         {
             ray = MainCamera.ScreenPointToRay(Input.mousePosition);
+
+            MoveCamera();
+
+            SetHover();
+
+            HoverCamera();
+        }
+
+        private void SetHover()
+        {
+            // Right Mouse button
+            if (Input.GetMouseButtonDown(1)) // Pressed
+            {
+                move = true;
+                lastPanAngle = panAngle;
+                lastTiltAngle = tiltAngle;
+                lastMouseX = Input.mousePosition.x;
+                lastMouseY = Input.mousePosition.y;
+            }
+            if (Input.GetMouseButtonUp(1)) // Unpressed
+            {
+                move = false;
+            }
+        }
+
+        private void MoveCamera()
+        {
             if (Input.GetKey(KeyCode.W) || Input.mousePosition.y >= Screen.height - panBorderThickness)
-                nextStepTarget.z += cameraSpeed * Time.deltaTime;
+            {
+                if (nextStepTarget.z < maxArea.yMax)
+                {
+                    nextStepTarget.z += cameraSpeed * Time.deltaTime;
+                }
+            }
             else if (Input.GetKey(KeyCode.S) || Input.mousePosition.y <= panBorderThickness)
-                nextStepTarget.z -= cameraSpeed * Time.deltaTime;
+            {
+                if (nextStepTarget.z > maxArea.yMin)
+                {
+                    nextStepTarget.z -= cameraSpeed * Time.deltaTime;
+                }
+            }
 
             if (Input.GetKey(KeyCode.A) || Input.mousePosition.x <= panBorderThickness)
-                nextStepTarget.x -= cameraSpeed * Time.deltaTime;
+            {
+                if (nextStepTarget.x > maxArea.xMin)
+                {
+                    nextStepTarget.x -= cameraSpeed * Time.deltaTime;
+                }
+            }
             else if (Input.GetKey(KeyCode.D) || Input.mousePosition.x >= Screen.width - panBorderThickness)
-                nextStepTarget.x += cameraSpeed * Time.deltaTime;
+            {
+                if (nextStepTarget.x < maxArea.xMax)
+                {
+                    nextStepTarget.x += cameraSpeed * Time.deltaTime;
+                }
+            }
+        }
 
-
+        private void HoverCamera()
+        {
             if (!tiltAngle.Equals(currentTiltAngle) || !panAngle.Equals(currentPanAngle) || !target.Equals(pos))
             {
 
@@ -116,13 +175,19 @@ namespace pazzle.game.contrellers
 
         void OnGUI()
         {
-            distance += Input.mouseScrollDelta.y * 1f;
+            distance += Input.mouseScrollDelta.y * 1.0f;
         }
 
         void FixedUpdate()
         {
             Vector3 smoothedPosition = Vector3.Lerp(target, nextStepTarget, smoothSpeed);
             target = smoothedPosition;
+
+            if (move)
+            {
+                panAngle = hoverConst * (Input.mousePosition.x - lastMouseX) + lastPanAngle;
+                tiltAngle = hoverConst * (Input.mousePosition.y - lastMouseY) + lastTiltAngle;
+            }
         }
     }
 }

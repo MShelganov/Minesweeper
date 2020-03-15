@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -176,7 +177,7 @@ GameObject:
   - component: {fileID: 409770913}
   - component: {fileID: 409770915}
   - component: {fileID: 409770914}
-  m_Layer: 2
+  m_Layer: 9
   m_Name: Terrain_0_0_81b58b00-eb44-4434-b382-1a7be51fcb67
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -216,7 +217,7 @@ Terrain:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 409770912}
   m_Enabled: 1
-  serializedVersion: 5
+  serializedVersion: 6
   m_TerrainData: {fileID: 15600000, guid: 2639210be0d8be342b2f01407b661e36, type: 2}
   m_TreeDistance: 5000
   m_TreeBillboardDistance: 50
@@ -239,6 +240,7 @@ Terrain:
   m_ScaleInLightmap: 0.8
   m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
   m_GroupingID: 0
+  m_RenderingLayerMask: 1
   m_AllowAutoConnect: 1
 --- !u!1 &499701381
 GameObject:
@@ -286,6 +288,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -394,8 +397,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 597858833}
-  m_LocalRotation: {x: 0.17390147, y: 0, z: 0, w: 0.9847631}
-  m_LocalPosition: {x: 595, y: 66.25034, z: 416.04834}
+  m_LocalRotation: {x: 0.1422443, y: 0.5648626, z: -0.09960053, w: 0.80670726}
+  m_LocalPosition: {x: 506.69778, y: 84.20202, z: 477.86063}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -447,6 +450,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -487,7 +491,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 758261012}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 593.9, y: 44.5, z: 402.9}
+  m_LocalPosition: {x: 514, y: 52, z: 459.2}
   m_LocalScale: {x: 20, y: 20, z: 20}
   m_Children: []
   m_Father: {fileID: 0}
@@ -524,17 +528,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MainCamera: {fileID: 597858835}
   cameraSpeed: 20
+  cameraHeight: 50
   smoothSpeed: 0.125
   panBorderThickness: 20
   interpolate: 1
-  panAngle: 0
+  panAngle: 70
   tiltAngle: 160
   distance: 100
   steps: 8
   yFactor: 1
   wrapPanAngle: 0
-  pos: {x: 595, y: 66.25034, z: 416.04834}
-  target: {x: 595, y: 32, z: 510}
+  pos: {x: 506.69778, y: 84.20202, z: 477.86063}
+  target: {x: 595, y: 50, z: 510}
 --- !u!4 &1188778752
 Transform:
   m_ObjectHideFlags: 0
@@ -650,8 +655,9 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1643685612}
   m_Enabled: 1
-  serializedVersion: 9
+  serializedVersion: 10
   m_Type: 1
+  m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10

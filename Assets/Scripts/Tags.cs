@@ -1,6 +1,6 @@
 ﻿public static class Tags
 {
-    static public string Tile   = "Tile";
-    static public string Domain = "Domain";
+    public const string Tile   = "Tile";
+    public const string Domain = "Domain";
 
 }
