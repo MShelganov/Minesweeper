@@ -29,17 +29,27 @@ namespace pazzle.game.contrellers
         public float yFactor = 1;
         public bool wrapPanAngle = false;
         public Vector3 pos = new Vector3(0.0f, 36.0f, -93.0f);
-        public Vector3 target;
+        public float maxPanAngle = 360.0f;
+        public float minPanAngle = 0.0f;
+        public float maxTiltAngle = 160.0f;
+        public float minTiltAngle = 110.0f;
+        public float maxDistance = 200.0f;
+        public float minDistance = 20.0f;
 
+        protected Vector3 target;
         protected Ray ray;
         protected RaycastHit raycastHit;
         protected Vector3 nextStepTarget;
-        protected Rect maxArea;
+        protected BoundRect area = new BoundRect(500, -500, 500, -500);
+        protected bool limitPanAngle = false;
+        protected bool limitTiltAngle = false;
 
         private float currentPanAngle = 0;
         private float currentTiltAngle = 90;
         private float lastPanAngle;
         private float lastTiltAngle;
+        private float tempPanAngle;
+        private float tempTiltAngle;
         private float lastMouseX;
         private float lastMouseY;
         private const float hoverConst = 0.3f;
@@ -57,7 +67,6 @@ namespace pazzle.game.contrellers
             nextStepTarget = new Vector3();
             currentPanAngle = panAngle;
             currentTiltAngle = tiltAngle;
-            maxArea = new Rect(-500.0f, -500.0f, 1000f, 1000f);
         }
 
         public virtual void Update()
@@ -92,33 +101,27 @@ namespace pazzle.game.contrellers
         {
             if (Input.GetKey(KeyCode.W) || Input.mousePosition.y >= Screen.height - panBorderThickness)
             {
-                if (nextStepTarget.z < maxArea.yMax)
-                {
-                    nextStepTarget.z += cameraSpeed * Time.deltaTime;
-                }
+                    nextStepTarget.z += cameraSpeed * Mathf.Cos(currentPanAngle * Mathf.Deg2Rad) * Time.deltaTime;
+                    nextStepTarget.x += cameraSpeed * Mathf.Sin(currentPanAngle * Mathf.Deg2Rad) * Time.deltaTime;
             }
             else if (Input.GetKey(KeyCode.S) || Input.mousePosition.y <= panBorderThickness)
             {
-                if (nextStepTarget.z > maxArea.yMin)
-                {
-                    nextStepTarget.z -= cameraSpeed * Time.deltaTime;
-                }
+                    nextStepTarget.z -= cameraSpeed * Mathf.Cos(currentPanAngle * Mathf.Deg2Rad) * Time.deltaTime;
+                    nextStepTarget.x -= cameraSpeed * Mathf.Sin(currentPanAngle * Mathf.Deg2Rad) * Time.deltaTime;
             }
 
             if (Input.GetKey(KeyCode.A) || Input.mousePosition.x <= panBorderThickness)
             {
-                if (nextStepTarget.x > maxArea.xMin)
-                {
-                    nextStepTarget.x -= cameraSpeed * Time.deltaTime;
-                }
+                    nextStepTarget.z -= cameraSpeed * Mathf.Cos((currentPanAngle + 90) * Mathf.Deg2Rad) * Time.deltaTime;
+                    nextStepTarget.x -= cameraSpeed * Mathf.Sin((currentPanAngle + 90) * Mathf.Deg2Rad) * Time.deltaTime;
             }
             else if (Input.GetKey(KeyCode.D) || Input.mousePosition.x >= Screen.width - panBorderThickness)
             {
-                if (nextStepTarget.x < maxArea.xMax)
-                {
-                    nextStepTarget.x += cameraSpeed * Time.deltaTime;
-                }
+                    nextStepTarget.z += cameraSpeed * Mathf.Cos((currentPanAngle + 90) * Mathf.Deg2Rad) * Time.deltaTime;
+                    nextStepTarget.x += cameraSpeed * Mathf.Sin((currentPanAngle + 90) * Mathf.Deg2Rad) * Time.deltaTime;
             }
+            nextStepTarget.z = Mathf.Max(area.MinZ, Mathf.Min(area.MaxZ, nextStepTarget.z));
+            nextStepTarget.x = Mathf.Max(area.MinX, Mathf.Min(area.MaxX, nextStepTarget.x));
         }
 
         private void HoverCamera()
@@ -175,7 +178,7 @@ namespace pazzle.game.contrellers
 
         void OnGUI()
         {
-            distance += Input.mouseScrollDelta.y * 1.0f;
+            distance = Mathf.Max(minDistance, Mathf.Min(maxDistance, distance + Input.mouseScrollDelta.y * 1.0f));
         }
 
         void FixedUpdate()
@@ -185,8 +188,25 @@ namespace pazzle.game.contrellers
 
             if (move)
             {
-                panAngle = hoverConst * (Input.mousePosition.x - lastMouseX) + lastPanAngle;
-                tiltAngle = hoverConst * (Input.mousePosition.y - lastMouseY) + lastTiltAngle;
+                if (limitPanAngle)
+                {
+                    tempPanAngle = hoverConst * (Input.mousePosition.x - lastMouseX) + lastPanAngle;
+                    panAngle = Mathf.Max(minPanAngle, Mathf.Min(maxPanAngle, tempPanAngle));
+                }
+                else
+                {
+                    panAngle = hoverConst * (Input.mousePosition.x - lastMouseX) + lastPanAngle;
+                }
+
+                if(limitTiltAngle)
+                {
+                    tempTiltAngle = hoverConst * (Input.mousePosition.y - lastMouseY) + lastTiltAngle;
+                    tiltAngle = Mathf.Max(minTiltAngle, Math.Min(maxTiltAngle, tempTiltAngle));
+                }
+                else
+                {
+                    tiltAngle = hoverConst * (Input.mousePosition.y - lastMouseY) + lastTiltAngle;
+                }
             }
         }
     }

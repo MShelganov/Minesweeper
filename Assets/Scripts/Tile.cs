@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-namespace pazzle.game
+namespace pazzle.game.dungeon
 {
     public class Tile : MonoBehaviour
     {

@@ -10,16 +10,15 @@ namespace pazzle.game.contrellers
         private Ray rayForTerrain;
         private RaycastHit hitForTerrain;
         private float rayLength;
-        private int layerMask;
 
         public override void Start()
         {
             base.Start();
+            limitTiltAngle = true;
             rayLength = 300.0f;
-            layerMask = LayerMask.NameToLayer("Terrain");
             target = new Vector3(595.0f, 50.0f, 510.0f);
             nextStepTarget = new Vector3(target.x, target.y, target.z);
-            maxArea = new Rect(200.0f, 200.0f, 800f, 775f);
+            area = new BoundRect(800.0f, 200.0f, 700.0f, 200.0f);
         }
 
         public override void Update()

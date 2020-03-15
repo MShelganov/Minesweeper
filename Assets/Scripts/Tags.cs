@@ -1,6 +1,9 @@
-﻿public static class Tags
+﻿namespace pazzle.game
 {
-    public const string Tile   = "Tile";
-    public const string Domain = "Domain";
+    public static class Tags
+    {
+        public const string Tile = "Tile";
+        public const string Domain = "Domain";
 
+    }
 }
